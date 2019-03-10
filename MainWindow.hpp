@@ -6,7 +6,7 @@
 
 
 class TaskWidget;
-
+class QVBoxLayout;
 namespace Ui {
 class MainWindow;
 }
@@ -25,7 +25,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QVector<TaskWidget*> m_tasks;
-
+    QVBoxLayout* m_tasksLayout;
 };
 
 #endif // MAINWINDOW_H

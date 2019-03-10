@@ -7,6 +7,9 @@
 #include <QInputDialog>
 #include <QString>
 #include <QVector>
+#include <QScrollArea>
+#include <QVBoxLayout>
+#include <QSpacerItem>
 
 #include "TaskWidget.hpp"
 
@@ -16,6 +19,24 @@ MainWindow::MainWindow(QWidget *parent) :
     m_tasks()
 {
     ui->setupUi(this);
+
+    QWidget* scrollAreaContent = new QWidget();
+    m_tasksLayout =  new QVBoxLayout();
+    m_tasksLayout->setDirection(QBoxLayout::BottomToTop);
+    QSpacerItem* spacer = new QSpacerItem(1, 1, QSizePolicy::Fixed, QSizePolicy::Expanding);
+    m_tasksLayout->addSpacerItem(spacer);
+
+
+    scrollAreaContent->setLayout( m_tasksLayout);
+
+    QScrollArea* scrollArea = new QScrollArea(this);
+    scrollArea->setHorizontalScrollBarPolicy (Qt::ScrollBarAlwaysOff);
+    scrollArea->setVerticalScrollBarPolicy (Qt::ScrollBarAsNeeded);
+    scrollArea->setWidgetResizable (true);
+    scrollArea->setWidget(scrollAreaContent);
+
+    ui->tasksLayout->addWidget(scrollArea);
+
 
     connect(ui->addButton, &QPushButton::clicked, this, &MainWindow::addTask);
     updateStatus();
@@ -38,7 +59,7 @@ void MainWindow::addTask()
     if(ok && !name.isEmpty()) {
         TaskWidget* task = new TaskWidget(name);
         m_tasks.append(task);
-        ui->tasksLayout->addWidget(task);
+        m_tasksLayout->addWidget(task);
 
         connect(task, &TaskWidget::removed, this, &MainWindow::removeTask);
         connect(task, &TaskWidget::statusChanged, this, &MainWindow::updateStatus);
@@ -49,7 +70,7 @@ void MainWindow::addTask()
 void MainWindow::removeTask(TaskWidget *task)
 {
     m_tasks.removeOne(task);
-    ui->tasksLayout->removeWidget(task);
+    m_tasksLayout->removeWidget(task);
     task->setParent(nullptr);
     delete task;
     updateStatus();
